@@ -5,10 +5,37 @@ from selenium.common.exceptions import ElementNotVisibleException
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.select import Select
 import time
+import openpyxl
 
-# 前台开启浏览器模式
+def get_index(column_name,sheet):
+    index = 0
+    for name in sheet.rows.__next__():
 
+        if (name.value==column_name):
+            return index
+        index += 1
+def load_data():
+    book = openpyxl.load_workbook('养户摄像头对应表.xlsx')
+    sheet = book.worksheets[0]
+    get_index("序列号",sheet)
+    devices = []
+    first_row_flag =0
+    for rows in sheet.rows:
+        if(first_row_flag==0):
+            first_row_flag=1
+        else:
+            single_device = []
+            if(rows[get_index("序列号",sheet)].value==None):
+                break
+            single_device.append(rows[get_index("公司", sheet)].value)
+            single_device.append(rows[get_index("地区", sheet)].value)
+            single_device.append(rows[get_index("服务部", sheet)].value)
+            single_device.append(rows[get_index("序列号",sheet)].value)
+            single_device.append(rows[get_index("设备名称",sheet)].value)
+            # print(single_device)
+            devices.append(single_device)
 
+    return devices
 def yunmou():
 
     # 加启动配置
@@ -27,15 +54,41 @@ def yunmou():
     try:
         driver.find_element_by_xpath('//button[@class="el-button el-button--default el-button--primary "]').click()
     except Exception :
-        print("未获取到")
-        driver.find_element_by_xpath('//div[@class="login-btn-div"]').click()
-    time.sleep(5)
-    url='https://www.hik-cloud.com/chainX/index.html#/system/equipment/management'
+        pass
+    devices=load_data()
+    time.sleep(3)
+    url = 'https://www.hik-cloud.com/chainX/index.html#/system/equipment/management'
     driver.get(url)
-    title='玖瑞'
+    for device_info in devices:
 
-    driver.find_element_by_xpath('//i[@class="h-icon-add"]').click()
-    input()
+        print(device_info)
+        time.sleep(1)
+        title1=device_info[0]
+        print(title1)
+        driver.find_elements_by_xpath('//span[@title="' + title1 + '"]/../span')[0].click()
+        time.sleep(1)
+        title2 =device_info[1]
+        time.sleep(1)
+        driver.find_elements_by_xpath('//span[@title="' + title2 + '"]/../span')[0].click()
+        title3=device_info[2]
+        if(title3==None):
+            driver.find_elements_by_xpath('//span[@title="' + title2 + '"]')[0].click()
+        else:
+            driver.find_element_by_xpath()
+        time.sleep(1)
+        driver.find_element_by_xpath('//i[@class="h-icon-add"]').click()
+        time.sleep(1)
+        inputs = driver.find_elements_by_xpath('//div[@class="el-form-item__content"]//div[@class="el-input"]//input[@autocomplete="off"]')
+        device_num=device_info[3]
+        device_verify_code= "12341234q"
+        device_name = device_info[4]
+        inputs[0].send_keys(device_num)
+        inputs[1].send_keys(device_verify_code)
+        inputs[2].send_keys(device_name+device_num)
+        driver.find_elements_by_xpath('//div[@class="el-dialog__wrapper"]//div[@class="el-dialog__footer"]//div[@class="dialog-footer"]//button[@class="el-button el-button--primary"]//span')[3].click()
+        time.sleep(1)
+        driver.refresh()
+        time.sleep(1)
 
 
 # 方法主入口
