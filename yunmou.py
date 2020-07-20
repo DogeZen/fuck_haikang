@@ -64,12 +64,14 @@ def yunmou():
         print(device_info)
         time.sleep(1)
         title1=device_info[0]
+        time.sleep(1)
         print(title1)
         driver.find_elements_by_xpath('//span[@title="' + title1 + '"]/../span')[0].click()
         time.sleep(1)
         title2 =device_info[1]
         time.sleep(1)
         driver.find_elements_by_xpath('//span[@title="' + title2 + '"]/../span')[0].click()
+        time.sleep(1)
         title3=device_info[2]
         if(title3==None):
             driver.find_elements_by_xpath('//span[@title="' + title2 + '"]')[0].click()
@@ -86,11 +88,28 @@ def yunmou():
         inputs[1].send_keys(device_verify_code)
         inputs[2].send_keys(device_name+device_num)
         driver.find_elements_by_xpath('//div[@class="el-dialog__wrapper"]//div[@class="el-dialog__footer"]//div[@class="dialog-footer"]//button[@class="el-button el-button--primary"]//span')[3].click()
+        try:
+            driver.find_elements_by_xpath('//i[@class="el-dialog__close el-icon h-icon-close"]')[3].click()
+        except:
+            pass
+
         time.sleep(1)
+        # try:
+        # driver.find_element_by_xpath('//div[text()="%s"]//..//..//..//td[@class="el-table_1_column_8   is-hidden"]//div//span'%device_num).click()
+        # print(len(driver.find_elements_by_xpath('//div[text()="%s"]//..//..//..//td[@class="el-table_1_column_8   is-hidden"]//div//span[@class="el-tooltip operator open"]'%device_num)))
+        try:
+            driver.find_elements_by_xpath('//div[text()="%s"]//..//..//..//td//div//span[@class="el-tooltip operator open"]'%device_num)[2].click()
+            driver.find_element_by_css_selector("#HKClosePasswordDialog > form > div.el-form-item.is-required-right > div > div > input").send_keys("12341234q")
+            driver.find_element_by_xpath('//span[text()="关闭加密"]').click()
+            driver.find_element_by_xpath('//span[text()="确定"]').click()
+        except:
+            print('关闭加密出现问题，设备已经加密过或者设备离线')
         driver.refresh()
         time.sleep(1)
-
-
+    print("添加成功")
+    url = "https://www.hik-cloud.com/chain/login/index.html#/login"
+    driver.get(url)
 # 方法主入口
 if __name__ == '__main__':
     yunmou()
+
