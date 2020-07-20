@@ -103,3 +103,4 @@ if __name__ == "__main__":
         c = input()
     except:
         print('未检测有设备接入有线网卡，请用网线连接摄像头和电脑')
+        c = input()
