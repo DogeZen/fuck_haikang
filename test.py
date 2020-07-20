@@ -69,7 +69,7 @@ def advanced_setting(driver):
     driver.find_element_by_xpath("//span[@ng-bind='oMenuLan.advancedSettings']").click()
     time.sleep(2)
     print("选中高级设置")
-    driver.find_element_by_xpath("//a[@id='ui-id-16']").click()
+    driver.find_element_by_xpath('//li[@module="advancedPlatform"]//a').click()
     time.sleep(2)
     driver.find_element_by_xpath("//select[@ng-model='oParams.szAccessType']").click()
     driver.find_element_by_xpath("//option[@value='ezviz']").click()
