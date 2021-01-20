@@ -6,7 +6,7 @@ arrIPAddresses = ['192.168.1.100', '192.168.1.150']  # IP地址列表
 arrSubnetMasks = ['255.255.255.0', '255.255.255.0']  # 子网掩码列表
 arrDefaultGateways = ['192.168.1.253']  # 默认网关列表
 arrGatewayCostMetrics = [1]  # 默认网关跳跃点
-arrDNSServers = ['11.114.114.114', '8.8.8.8']  # DNS服务器列表
+arrDNSServers = ['114.114.114.114', '8.8.8.8']  # DNS服务器列表
 intReboot = 0
 
 

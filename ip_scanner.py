@@ -15,9 +15,7 @@ def openChrome():
     # 加启动配置
     option = webdriver.ChromeOptions()
     option.add_argument('disable-infobars')
-    option.add_argument('--headless')
-    option.add_argument('--disable-gpu')
-
+    option.add_argument('headless')
     # 打开chrome浏览器
     driver = webdriver.Chrome(chrome_options=option)
     return driver

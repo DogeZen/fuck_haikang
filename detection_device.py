@@ -21,11 +21,16 @@ def is_admin():
 def openChrome():
     # 加启动配置
     option = webdriver.ChromeOptions()
+    # option.add_argument('--headless')
     option.add_argument('disable-infobars')
 
     # 打开chrome浏览器
     driver = webdriver.Chrome(chrome_options=option)
+    driver.maximize_window()
     return driver
+
+
+
 
 
 # 授权操作
@@ -57,7 +62,7 @@ def operationAuth(driver):
     advanced_setting(driver)
     osd(driver)
     region_cover(driver)
-
+    smart_detection(driver)
     storage_manage(driver)
     video_setting(driver)
     record_device_num(driver)
@@ -73,17 +78,26 @@ def advanced_setting(driver):
     driver.find_element_by_xpath("//select[@ng-model='oParams.szAccessType']").click()
     driver.find_element_by_xpath("//option[@value='ezviz']").click()
     time.sleep(1)
-    if driver.find_element_by_xpath("//input[@ng-model='oParams.bEnableEzviz']").is_selected() != True:
-        driver.find_element_by_xpath("//input[@ng-model='oParams.bEnableEzviz']").click()
-        time.sleep(2)
+    # if driver.find_element_by_xpath("//input[@ng-model='oParams.bEnableEzviz']").is_selected() != True:
+    driver.find_element_by_xpath("//input[@ng-model='oParams.bEnableEzviz']").click()
+    time.sleep(1)
+    driver.find_element_by_xpath("//input[@ng-model='oParams.bEnableEzviz']").click()
+    try:
+        time.sleep(1)
+        driver.find_elements_by_xpath("//input")[0].clear()
+        time.sleep(1)
+        driver.find_elements_by_xpath("//input")[1].clear()
+        time.sleep(1)
         driver.find_elements_by_xpath("//input")[0].send_keys('12341234q')
         driver.find_elements_by_xpath("//input")[1].send_keys('12341234q')
         driver.find_element_by_xpath("//button[@class='aui_state_highlight']").click()
-        driver.find_element_by_xpath("//button[@class='btn btn-primary btn-save']").click()
+    except:
+        pass
+    time.sleep(1)
+    driver.find_element_by_xpath('//input[@input-valid="oParamsEzvizValid.oVerifyCode"]').clear()
+    driver.find_element_by_xpath('//input[@input-valid="oParamsEzvizValid.oVerifyCode"]').send_keys('12341234q')
+    driver.find_element_by_xpath("//button[@class='btn btn-primary btn-save']").click()
     print("萤石云配置成功")
-
-
-# osd配置
 def osd(driver):
     driver.find_element_by_xpath('//span[@ng-bind="oMenuLan.image"]').click()
     time.sleep(1)
@@ -97,7 +111,7 @@ def osd(driver):
         # print(column[0].value)
         if column[0].value == '序列号':
             for i in range(len(column)):
-                if (column[i].value == None):
+                if column[i].value is None:
                     devices_num = i
                     # print("已录入设备数目为" + str(devices_num - 1))
                     break
@@ -105,13 +119,13 @@ def osd(driver):
         if column[0].value == 'osd':
             name = column[devices_num].value
             # print(name)
-    if name != None:
+    if name is not None:
 
         driver.find_element_by_xpath('//input[@ng-model="oOsdParams.cameraName"]').send_keys(name)
         driver.find_element_by_xpath('//button[@ng-click="save()"]').click()
         print("osd修改完成")
     else:
-        print("osd为空，未修改osd！")
+        print("养户名为空，未修改osd！")
 
 
 # 遮挡区域配置
@@ -163,12 +177,26 @@ def region_cover(driver):
     time.sleep(1)
     if driver.find_element_by_xpath('//input[@id="enableVideoTamper"]').is_selected() != True:
         driver.find_element_by_xpath('//input[@id="enableVideoTamper"]').click()
-    if driver.find_element_by_xpath('//input[@ng-click="alarmLinkAll()"]').is_selected() != True:
-        driver.find_element_by_xpath('//input[@ng-click="alarmLinkAll()"]').click()
-    if driver.find_element_by_xpath('//input[@ng-click="normalLinkAll()"]').is_selected() != True:
+    # if driver.find_element_by_xpath('//input[@ng-click="alarmLinkAll()"]').is_selected() != True:
+    #     driver.find_element_by_xpath('//input[@ng-click="alarmLinkAll()"]').click()
+    if not driver.find_element_by_xpath('//input[@ng-click="normalLinkAll()"]').is_selected():
         driver.find_element_by_xpath('//input[@ng-click="normalLinkAll()"]').click()
     driver.find_element_by_xpath('//button[@ng-click="save()"]').click()
     print("联动方式设置完成")
+
+def smart_detection(driver):
+    #Smart事件
+
+    driver.find_element_by_xpath('//span[@ng-bind="oMenuLan.smartEvent"]').click()
+    time.sleep(1)
+    driver.find_element_by_xpath('//a[@ng-bind="oLan.intrusionDetect"]').click()
+    time.sleep(1)
+    if not driver.find_element_by_css_selector('.checkbox.ng-pristine.ng-valid').is_selected():
+        driver.find_element_by_css_selector('.checkbox.ng-pristine.ng-valid').click()
+        time.sleep(1)
+        driver.find_element_by_xpath('//button[@class="btn btn-primary btn-save"]').click()
+
+        time.sleep(1)
 
 
 def record_project(driver):
@@ -196,8 +224,9 @@ def record_project(driver):
 
 
 def video_setting(driver):
+    time.sleep(2)
     driver.find_element_by_xpath('//span[@class="menu-icon video-icon"]').click()
-    time.sleep(3)
+    time.sleep(2)
     Select(driver.find_element_by_xpath('//select[@ng-model="oVideoParams.resolution"]')).select_by_index(0)
     Select(driver.find_element_by_xpath('//select[@ng-model="oVideoParams.bitrateType"]')).select_by_index(1)
     Select(driver.find_element_by_xpath('//select[@ng-model="oVideoParams.videoQuality"]')).select_by_index(2)
@@ -273,9 +302,9 @@ def record_num(device_num):
             if (column[0].value == '序列号'):
                 column_num = devices_column_index
                 for i in range(len(column)):
-                    if (column[i].value == None):
+                    if (column[i].value is None):
                         devices_num = i
-                        print("该excel表中已录入设备数目为" + str(devices_num - 1))
+                        print("该excel表中已录入设备数目为" + str(devices_num ))
                         break
             devices_column_index += 1
         sheet.cell(row=devices_num + 1, column=column_num, value=device_num)
